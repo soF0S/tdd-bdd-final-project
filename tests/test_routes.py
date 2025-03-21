@@ -96,8 +96,7 @@ class TestProductRoutes(TestCase):
     ############################################################
     #  T E S T   C A S E S
     ############################################################
-    
-    
+
     def test_index(self):
         """It should return the index page"""
         response = self.client.get("/")
@@ -115,22 +114,21 @@ class TestProductRoutes(TestCase):
     # TEST CREATE
     # ----------------------------------------------------------
 
-
     def test_create_product(self):
         """It should Create a new Product"""
         test_product = ProductFactory()
         # Print Serialized Product
         logging.debug("Test Serialized Product: %s", test_product.serialize())
         response = self.client.post(BASE_URL, json=test_product.serialize())
-    
+
         if response.status_code != status.HTTP_201_CREATED:
             logging.error("Response Error: %s", response.data)
             self.fail(f"Expected status code {status.HTTP_201_CREATED} but got {response.status_code}")
-    
+
         # Print the response
         logging.debug("API Response: %s", response.data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-    
+
         # Make sure location header is set
         location = response.headers.get("Location", None)
         self.assertIsNotNone(location)

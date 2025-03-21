@@ -88,7 +88,7 @@ def create_products():
     product.deserialize(data)
     # Validation if necessary
     if not product.name or not product.price:
-        return jsonify({"error": "Name and price are required fields"}), status.HTTP_400_BAD_REQUEST    
+        return jsonify({"error": "Name and price are required fields"}), status.HTTP_400_BAD_REQUEST
     product.create()
     app.logger.info("Product with new id [%s] saved!", product.id)
 
