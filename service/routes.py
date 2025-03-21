@@ -23,29 +23,33 @@ from flask import url_for  # noqa: F401 pylint: disable=unused-import
 from service.models import Product
 from service.common import status  # HTTP Status Codes
 from . import app
-
+from service.models import Category
 
 ######################################################################
 # H E A L T H   C H E C K
 ######################################################################
+
+
 @app.route("/health")
 def healthcheck():
     """Let them know our heart is still beating"""
     return jsonify(status=200, message="OK"), status.HTTP_200_OK
 
-
 ######################################################################
 # H O M E   P A G E
 ######################################################################
+
+
 @app.route("/")
 def index():
     """Base URL for our service"""
     return app.send_static_file("index.html")
 
-
 ######################################################################
 #  U T I L I T Y   F U N C T I O N S
 ######################################################################
+
+
 def check_content_type(content_type):
     """Checks that the media type is correct"""
     if "Content-Type" not in request.headers:
@@ -64,10 +68,11 @@ def check_content_type(content_type):
         f"Content-Type must be {content_type}",
     )
 
-
 ######################################################################
 # C R E A T E   A   N E W   P R O D U C T
 ######################################################################
+
+
 @app.route("/products", methods=["POST"])
 def create_products():
     """
@@ -99,6 +104,8 @@ def create_products():
 ######################################################################
 # LIST PRODUCTS
 ######################################################################
+
+
 @app.route("/products", methods=["GET"])
 def list_products():
     """Returns a list of Products"""
@@ -136,6 +143,8 @@ def list_products():
 ######################################################################
 # READ A PRODUCT
 ######################################################################
+
+
 @app.route("/products/<int:product_id>", methods=["GET"])
 def get_products(product_id):
     """
@@ -158,6 +167,8 @@ def get_products(product_id):
 ######################################################################
 # UPDATE AN EXISTING PRODUCT
 ######################################################################
+
+
 @app.route("/products/<int:product_id>", methods=["PUT"])
 def update_products(product_id):
     """
@@ -183,6 +194,8 @@ def update_products(product_id):
 ######################################################################
 # DELETE A PRODUCT
 ######################################################################
+
+
 @app.route("/products/<int:product_id>", methods=["DELETE"])
 def delete_products(product_id):
     """
@@ -195,5 +208,4 @@ def delete_products(product_id):
     product = Product.find(product_id)
     if product:
         product.delete()
-
     return "", status.HTTP_204_NO_CONTENT
