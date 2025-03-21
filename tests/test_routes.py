@@ -96,6 +96,8 @@ class TestProductRoutes(TestCase):
     ############################################################
     #  T E S T   C A S E S
     ############################################################
+    
+    
     def test_index(self):
         """It should return the index page"""
         response = self.client.get("/")
@@ -112,30 +114,42 @@ class TestProductRoutes(TestCase):
     # ----------------------------------------------------------
     # TEST CREATE
     # ----------------------------------------------------------
+
+
     def test_create_product(self):
         """It should Create a new Product"""
         test_product = ProductFactory()
-        logging.debug("Test Product: %s", test_product.serialize())
+        # Print Serialized Product
+        logging.debug("Test Serialized Product: %s", test_product.serialize())
         response = self.client.post(BASE_URL, json=test_product.serialize())
+    
+        if response.status_code != status.HTTP_201_CREATED:
+            logging.error("Response Error: %s", response.data)
+            self.fail(f"Expected status code {status.HTTP_201_CREATED} but got {response.status_code}")
+    
+        # Print the response
+        logging.debug("API Response: %s", response.data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-
+    
         # Make sure location header is set
         location = response.headers.get("Location", None)
         self.assertIsNotNone(location)
 
         # Check the data is correct
         new_product = response.get_json()
-        self.assertEqual(new_product["name"], test_product.name)
-        self.assertEqual(new_product["description"], test_product.description)
-        self.assertEqual(Decimal(new_product["price"]), test_product.price)
-        self.assertEqual(new_product["available"], test_product.available)
-        self.assertEqual(new_product["category"], test_product.category.name)
+        if not new_product:
+            logging.error("New Product is empty or None: %s", new_product)
+            self.fail("New Product data is empty or None")
 
-        #
+        # Print of new product
+        logging.debug("New Product: %s", new_product)
+        self.assertEqual(new_product["name"], test_product.name, "Product name does not match!")
+        self.assertEqual(new_product["description"], test_product.description, "Product description does not match!")
+        self.assertEqual(Decimal(new_product["price"]), test_product.price, "Product price does not match!")
+        self.assertEqual(new_product["available"], test_product.available, "Product availability does not match!")
+        self.assertEqual(new_product["category"], test_product.category.name, "Product category does not match!")
+
         # Uncomment this code once READ is implemented
-        #
-
-        # Check that the location header was correct
         response = self.client.get(location)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         new_product = response.get_json()
@@ -153,6 +167,9 @@ class TestProductRoutes(TestCase):
         logging.debug("Product no name: %s", new_product)
         response = self.client.post(BASE_URL, json=new_product)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        if response.status_code != status.HTTP_400_BAD_REQUEST:
+            logging.error("Unexpected Response: %s", response.data)
+            self.fail(f"Expected status code {status.HTTP_400_BAD_REQUEST}, but got {response.status_code}")
 
     def test_create_product_no_content_type(self):
         """It should not Create a Product with no Content-Type"""

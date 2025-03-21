@@ -86,6 +86,9 @@ def create_products():
     app.logger.info("Processing: %s", data)
     product = Product()
     product.deserialize(data)
+    # Validation if necessary
+    if not product.name or not product.price:
+        return jsonify({"error": "Name and price are required fields"}), status.HTTP_400_BAD_REQUEST    
     product.create()
     app.logger.info("Product with new id [%s] saved!", product.id)
 
@@ -94,8 +97,8 @@ def create_products():
     #
     # Uncomment this line of code once you implement READ A PRODUCT
     #
-    # location_url = url_for("get_products", product_id=product.id, _external=True)
-    location_url = "/"  # delete once READ is implemented
+    location_url = url_for("get_products", product_id=product.id, _external=True)
+    # location_url = "/"  # delete once READ is implemented
     return jsonify(message), status.HTTP_201_CREATED, {"Location": location_url}
 
 #
