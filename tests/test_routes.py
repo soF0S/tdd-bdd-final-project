@@ -49,6 +49,8 @@ BASE_URL = "/products"
 #  T E S T   C A S E S
 ######################################################################
 # pylint: disable=too-many-public-methods
+
+
 class TestProductRoutes(TestCase):
     """Product Service tests"""
 
@@ -228,6 +230,14 @@ class TestProductRoutes(TestCase):
 
     def test_get_product_list(self):
         """It should Get a list of Products"""
+        self._create_products(5)
+        response = self.client.get(BASE_URL)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.get_json()
+        self.assertEqual(len(data), 5)
+
+    def test_get_all_product_list(self):
+        """It should get a list of all the products"""
         self._create_products(5)
         response = self.client.get(BASE_URL)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
